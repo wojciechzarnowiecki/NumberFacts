@@ -1,5 +1,7 @@
 package wojtek.justyna.numberfacts;
 
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,11 +24,16 @@ import java.net.URL;
 
 public class MainActivity extends AppCompatActivity {
     private final String REST_API_NUMBERS = "http://numbersapi.com/random/";
+    private final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS FACT(TEXT VARCHAR);";
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        db = openOrCreateDatabase("numbersDB", MODE_PRIVATE, null);
+        db.execSQL(CREATE_TABLE);
 
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -44,12 +51,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        Button button_clear = (Button) findViewById(R.id.clearScreen_button);
-
-        button_clear.setOnClickListener(new View.OnClickListener() {
+        Button button_save = findViewById(R.id.saveToDB_buton);
+        button_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String displayed_text = result_text.getText().toString();
+                db.execSQL("INSERT INTO FACT VALUES('"+displayed_text+"');");
+                result_text.setText("");
+            }
+        });
+
+        Button button_showDB = findViewById(R.id.showDB_button);
+        button_showDB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                result_text.setText("");
+                StringBuilder resultOfDB = new StringBuilder();
+                int i = 1;
+
+                Cursor resultSet = db.rawQuery("SELECT * from FACT", null);
+                resultSet.moveToFirst();
+
+                if(resultSet.getCount()==0){
+                    resultOfDB.append("Dear user, the saved list is empty. Please add new records.");
+                }
+
+                do {
+                    if(!(resultSet.getCount()==0)) {
+                        resultOfDB.append(i + ". ");
+                        resultOfDB.append(resultSet.getString(0) + "\n");
+                        i++;
+                    }
+                }while (resultSet.moveToNext());
+
+                result_text.setText(resultOfDB.toString());
+            }
+        });
+
+        Button button_cleardb = findViewById(R.id.clearDB_button);
+
+        button_cleardb.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                db.execSQL("DELETE FROM FACT");
                 result_text.setText("");
             }
         });
