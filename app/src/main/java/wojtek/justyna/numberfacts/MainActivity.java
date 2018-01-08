@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.apache.http.HttpResponse;
@@ -51,13 +52,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final EditText fromUser = findViewById(R.id.editNum);
+        Button getByNumber = findViewById(R.id.getFactsByNumber_button);
+
+        getByNumber.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String answer =  fromUser.getText().toString();
+                String newText = getResponse("http://numbersapi.com/"+answer);
+                result_text.setText(newText);
+            }
+        });
+
         Button button_save = findViewById(R.id.saveToDB_buton);
         button_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String displayed_text = result_text.getText().toString();
                 db.execSQL("INSERT INTO FACT VALUES('"+displayed_text+"');");
-                result_text.setText("");
+                result_text.setText("DEAR USER, A NEW RECORD HAS BEEN ADDED TO YOUR LIST");
             }
         });
 
@@ -73,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 resultSet.moveToFirst();
 
                 if(resultSet.getCount()==0){
-                    resultOfDB.append("Dear user, the saved list is empty. Please add new records.");
+                    resultOfDB.append("DEAR USER, THE LIST IS EMPTY.\nADD NEW RECORDS WHEN READY");
                 }
 
                 do {
@@ -94,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 db.execSQL("DELETE FROM FACT");
-                result_text.setText("");
+                result_text.setText("DEAR USER, THE LIST IS EMPTY.\nADD NEW RECORDS.");
             }
         });
 
@@ -113,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             if (inputStream != null)
                 result = convertInputStreamToString(inputStream);
             else
-                result = "Did not work!";
+                result = "DID NOT WORK!";
 
         } catch (Exception e) {
             Log.d("InputStream", e.getMessage());
