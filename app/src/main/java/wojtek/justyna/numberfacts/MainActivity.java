@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button button_get = findViewById(R.id.getFacts_button);
         final TextView result_text = findViewById(R.id.text_result);
+        result_text.setMovementMethod((new ScrollingMovementMethod()));
 
         button_get.setOnClickListener(new View.OnClickListener() {
             @Override
