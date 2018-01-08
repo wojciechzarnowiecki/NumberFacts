@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         button_save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String displayed_text = result_text.getText().toString();
+                String displayed_text = result_text.getText().toString()+"\n";
                 db.execSQL("INSERT INTO FACT VALUES('"+displayed_text+"');");
                 result_text.setText("DEAR USER, A NEW RECORD HAS BEEN ADDED TO YOUR LIST");
             }
